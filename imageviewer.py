@@ -40,8 +40,10 @@ class MyLabel(QtGui.QLabel):
         painter = QtGui.QPainter(self)
         if self.Drawed:
             painter.setPen(QtGui.QPen(self.myPenColor, self.myPenWidth))
-            for lp, ep in self.linePos:
-                painter.drawLine(lp, ep)
+            for lp, ep in self.finalPos:
+                curLP = QtCore.QPoint(lp.x()*self.curScale, lp.y()*self.curScale)
+                curEP = QtCore.QPoint(ep.x()*self.curScale, ep.y()*self.curScale)
+                painter.drawLine(curLP, curEP)
         if self.track:
             painter.setPen(QtGui.QPen(self.myPenColor, 1))
             painter.drawLine(0, self.trackPos.y(), self.width(), self.trackPos.y())
@@ -198,8 +200,8 @@ class ImageViewer(QtGui.QWidget):
         print('saved')
         painter = QtGui.QPainter(self.pixmap)
         painter.setPen(QtGui.QPen(self.imageLabel.myPenColor, self.imageLabel.myPenWidth))
-        if len(self.imageLabel.linePos) != 0:
-            for lp, ep in self.imageLabel.linePos:
+        if len(self.imageLabel.finalPos) != 0:
+            for lp, ep in self.imageLabel.finalPos:
                 painter.drawLine(lp, ep)
         self.pixmap.save(filename, QtCore.QByteArray(str(filename.split('.')[-1])))
         xmlName = filename.split('/')[-1].split('.')[0]+'.xml'
@@ -216,8 +218,8 @@ class ImageViewer(QtGui.QWidget):
                 label = doc.createElement('label')
                 label.appendChild(doc.createTextNode(unicode(self.textbox.text())))
                 info.appendChild(label)
-            if not os.path.exists('result1'):
-                os.makedirs('result1')
+            if not os.path.exists('result'):
+                os.makedirs('result')
             with open('result/' + xmlName, 'w') as f:
                 f.write(doc.toprettyxml(indent='\t', encoding='utf-8'))
             self.textbox.setText('')
